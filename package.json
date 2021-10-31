@@ -42,7 +42,9 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@bitauth/libauth": "^1.17.1"
+    "@lay2/pw-core": "^0.4.0-alpha.11",
+    "axios": "^0.24.0",
+    "up-core": "../up-core"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
@@ -66,7 +68,17 @@
     "standard-version": "^9.0.0",
     "ts-node": "^9.0.0",
     "typedoc": "^0.19.0",
-    "typescript": "^4.0.2"
+    "@babel/plugin-transform-modules-commonjs": "^7.16.0",
+    "@metamask/eth-sig-util": "^4.0.0",
+    "@size-limit/preset-small-lib": "^6.0.3",
+    "ethereum-private-key-to-address": "^0.0.7",
+    "ethereumjs-util": "^7.1.0",
+    "husky": "^7.0.4",
+    "size-limit": "^6.0.3",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.4",
+    "web3-utils": "^1.6.0"
   },
   "files": [
     "build/main",
