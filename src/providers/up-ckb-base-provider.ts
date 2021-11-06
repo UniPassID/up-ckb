@@ -25,11 +25,13 @@ export class UPCKBBaseProvider extends Provider {
     super(Platform.ckb);
 
     this.usernameHash = sha256(username);
+    console.log('[up-ckb] this.usernameHash', this.usernameHash);
     const script = new Script(
       assetLockCodeHash,
       this.usernameHash.slice(0, 42),
       hashType
     );
+    console.log('[up-ckb] script', script);
     this.address = script.toAddress();
   }
 

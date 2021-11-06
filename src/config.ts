@@ -1,28 +1,14 @@
 import { CellDep, ChainID, DepType, OutPoint } from '@lay2/pw-core';
 
 export class UPConfig {
-  public aggregatorUrl: string;
-  public ckbNodeUrl: string;
-  public ckbIndexerUrl: string;
-  public chainID: ChainID;
-  public upLockCodeHash: string;
-  public upLockDep: CellDep;
-
   constructor(
-    aggregatorUrl: string,
-    ckbNodeUrl: string,
-    ckbIndexerUrl: string,
-    chainID: ChainID,
-    upLockCodeHash: string,
-    upLockDep: CellDep
-  ) {
-    this.aggregatorUrl = aggregatorUrl;
-    this.ckbNodeUrl = ckbNodeUrl;
-    this.ckbIndexerUrl = ckbIndexerUrl;
-    this.chainID = chainID;
-    this.upLockCodeHash = upLockCodeHash;
-    this.upLockDep = upLockDep;
-  }
+    public aggregatorUrl: string,
+    public ckbNodeUrl: string,
+    public ckbIndexerUrl: string,
+    public chainID: ChainID,
+    public upLockCodeHash: string,
+    public upLockDep: CellDep
+  ) {}
 }
 
 const upConfig: UPConfig = new UPConfig(
@@ -30,7 +16,7 @@ const upConfig: UPConfig = new UPConfig(
   'https://testnet.ckb.dev',
   'https://testnet.ckb.dev/indexer',
   ChainID.ckb_testnet,
-  '',
+  '0xd3f6d12ac220b3f7e104f3869e72487f8940adb13a526a2abd775c2cd5040f77',
   new CellDep(DepType.code, new OutPoint('txhash', 'txindex'))
 );
 

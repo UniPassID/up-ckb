@@ -74,10 +74,10 @@ function completeTxWithProof(
   // push asset-lock bin as cell deps
   signedTx.raw.cellDeps.push(getConfig().upLockDep);
 
-  console.log('proof', assetLockProof);
+  console.log('[up-ckb] proof', assetLockProof);
 
-  console.log('pubkey', pubkey);
-  console.log('sig', sig);
+  console.log('[up-ckb] pubkey', pubkey);
+  console.log('[up-ckb] sig', sig);
 
   // rebuild witness, username/userinfo/proof
   const witness_lock = UPLockWitness.SerializeAssetLockWitness({
@@ -88,7 +88,7 @@ function completeTxWithProof(
     user_info_smt_proof: new Reader(assetLockProof.userInfoSmtProof),
   });
 
-  console.log('witness_lock', new Reader(witness_lock).serializeJson());
+  console.log('[up-ckb] witness_lock', new Reader(witness_lock).serializeJson());
 
   // Fill witnesses
   signedTx.witnesses[0] = new Reader(
@@ -104,8 +104,10 @@ function completeTxWithProof(
 }
 
 function extractSigFromWitness(witness: string) {
-  console.log('signedTx.witnesses[0]', witness);
+  console.log('[up-ckb] signedTx.witnesses[0]', witness);
   const witnessArgs = new LumosCore.WitnessArgs(new Reader(witness));
+  console.log('[up-ckb] witnessArgs', witnessArgs.getLock().value().raw());
+
   const lockHex = new Reader(
     witnessArgs.getLock().value().raw()
   ).serializeJson();
@@ -114,11 +116,25 @@ function extractSigFromWitness(witness: string) {
     Buffer.from(lockHex.replace('0x', ''), 'hex').toString()
   ) as UPAuthResponse;
 
-  console.log('UPAuthResponse', { keyType, pubkey, sig });
+  console.log('[up-ckb] UPAuthResponse', { keyType, pubkey, sig });
   // convert type to UPAuthResponse
+  let pubKeyValue;
+  switch (keyType) {
+    case 'RsaPubkey':
+      pubKeyValue = {
+        e: new Reader(pubkey.slice(0, 10)),
+        n: new Reader(`0x${pubkey.slice(10)}`),
+      };
+      break;
+    case 'Secp256k1Pubkey':
+      pubKeyValue = new Reader(pubkey);
+      break;
+    case 'Secp256r1Pubkey':
+      break;
+  }
   const pubKey = {
     type: keyType,
-    value: new Reader(pubkey),
+    value: pubKeyValue,
   };
 
   return { pubkey: pubKey, sig: new Reader(sig) };
@@ -145,8 +161,8 @@ export async function sendUPLockTransaction(
   );
 
   const transformedTx = transformers.TransformTransaction(completedSignedTx);
-  console.log('tx', JSON.stringify(transformedTx, null, 2));
+  console.log('[up-ckb] tx', JSON.stringify(transformedTx, null, 2));
   const txHash = await rpc.send_transaction(transformedTx, 'passthrough');
-  console.log('txHash', txHash);
+  console.log('[up-ckb] txHash', txHash);
   return txHash;
 }

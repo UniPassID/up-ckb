@@ -36,7 +36,7 @@ export class UPLockSimpleBuilder extends Builder {
     let inputSum = new Amount('0');
     const inputCells = [];
 
-    console.log('providerAddress', this.provider.address);
+    console.log('[up-ckb] providerAddress', this.provider.address);
     // fill the inputs
     const cells = await this.collector.collect(this.provider.address, {
       neededAmount
@@ -46,7 +46,7 @@ export class UPLockSimpleBuilder extends Builder {
       inputSum = inputSum.add(cell.capacity);
       if (inputSum.gt(neededAmount)) break;
     }
-    console.log('inputSum', inputSum.toString());
+    console.log('[up-ckb] inputSum', inputSum.toString());
 
     if (inputSum.lt(neededAmount)) {
       throw new Error(

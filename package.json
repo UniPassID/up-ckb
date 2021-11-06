@@ -42,11 +42,11 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@lay2/pw-core": "^0.4.0-alpha.11",
-    "axios": "^0.24.0",
-    "up-core": "../up-core"
+    "@lay2/pw-core": "^0.4.0-alpha.12",
+    "axios": "^0.24.0"
   },
   "devDependencies": {
+    "up-core": "../up-core",
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",

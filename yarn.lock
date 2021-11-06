@@ -1587,10 +1587,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@lay2/pw-core@^0.4.0-alpha.11":
-  version "0.4.0-alpha.11"
-  resolved "https://registry.npmmirror.com/@lay2/pw-core/download/@lay2/pw-core-0.4.0-alpha.11.tgz#f8d5005b5824d44dc84b517607cabe57f05938f1"
-  integrity sha1-+NUAW1gk1E3IS1F2B8q+V/BZOPE=
+"@lay2/pw-core@^0.4.0-alpha.12":
+  version "0.4.0-alpha.12"
+  resolved "https://registry.npmmirror.com/@lay2/pw-core/download/@lay2/pw-core-0.4.0-alpha.12.tgz#6ee432bea6ed84811abec822b240fedc411573e3"
+  integrity sha1-buQyvqbthIEavsgiskD+3EEVc+M=
   dependencies:
     "@nervosnetwork/ckb-sdk-utils" "^0.41.1"
     "@scatterjs/core" "^2.7.53"

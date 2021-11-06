@@ -5,36 +5,29 @@ import {
   DefaultSigner,
   IndexerCollector,
   RPC,
-  Transaction
+  Transaction,
 } from '@lay2/pw-core';
-import UPCore from 'up-core';
 
 import { getConfig } from './config';
 import { config } from './config';
-import { UPCKBBaseProvider, UPCoreSimpleProvier } from './providers';
+import { UPCKBBaseProvider } from './providers';
 import { sendUPLockTransaction } from './up-lock-proof';
 import { UPLockSimpleBuilder } from './up-lock-simple-builder';
 
-async function getUPUsername(): Promise<string> {
-  const account = await UPCore.connect();
-  return account.username;
+function getCKBAddress(username: string): Address {
+  const provider = new UPCKBBaseProvider(username, getConfig().upLockCodeHash);
+
+  return provider.address;
 }
 
 async function sendCKB(
   to: Address,
   amount: Amount,
-  provider?: UPCKBBaseProvider
+  provider: UPCKBBaseProvider
 ): Promise<string> {
-  if (!provider) {
-    provider = new UPCoreSimpleProvier(
-      await getUPUsername(),
-      getConfig().upLockCodeHash
-    );
-  }
-
   const builder = new UPLockSimpleBuilder(to, amount, provider!, {
     collector: new IndexerCollector(getConfig().ckbIndexerUrl),
-    witnessArgs: Builder.WITNESS_ARGS.RawSecp256k1
+    witnessArgs: Builder.WITNESS_ARGS.RawSecp256k1,
   });
   const tx = await builder.build();
 
@@ -57,7 +50,8 @@ async function sendTransaction(
 export * from './providers';
 const functions = {
   config,
+  getCKBAddress,
   sendCKB,
-  sendTransaction
+  sendTransaction,
 };
 export default functions;

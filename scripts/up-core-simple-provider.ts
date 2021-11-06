@@ -2,7 +2,7 @@ import { Reader } from '@lay2/pw-core';
 import UPCore from 'up-core';
 import { UPAuthMessage, UPAuthResponse } from 'up-core';
 
-import { UPCKBBaseProvider } from './up-ckb-base-provider';
+import { UPCKBBaseProvider } from '../src/providers/up-ckb-base-provider';
 
 export class UPCoreSimpleProvier extends UPCKBBaseProvider {
   async authorize(message: string): Promise<UPAuthResponse> {
