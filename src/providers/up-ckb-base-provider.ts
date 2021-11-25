@@ -6,7 +6,7 @@ import {
   Provider,
   Script,
 } from '@lay2/pw-core';
-import { UPAuthResponse } from 'up-core';
+import { UPAuthResponse } from 'up-core-test';
 
 import { sha256 } from '../utils';
 
@@ -25,13 +25,11 @@ export class UPCKBBaseProvider extends Provider {
     super(Platform.ckb);
 
     this.usernameHash = sha256(username);
-    console.log('[up-ckb] this.usernameHash', this.usernameHash);
     const script = new Script(
       assetLockCodeHash,
       this.usernameHash.slice(0, 42),
       hashType
     );
-    console.log('[up-ckb] script', script);
     this.address = script.toAddress();
   }
 
@@ -39,6 +37,12 @@ export class UPCKBBaseProvider extends Provider {
     return this;
   }
 
+  /**
+   * call UniPass authorize a CKB transaction
+   *
+   * @param _message message to be signed
+   * @returns UniPass Authorize Response
+   */
   async authorize(_message: string): Promise<UPAuthResponse> {
     throw new Error('Not Implemented');
   }

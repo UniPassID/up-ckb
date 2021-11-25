@@ -1,17 +1,17 @@
 import { CellDep, ChainID, DepType, OutPoint } from '@lay2/pw-core';
 
-export class UPConfig {
+export class UPCKBConfig {
   constructor(
-    public aggregatorUrl: string,
-    public ckbNodeUrl: string,
-    public ckbIndexerUrl: string,
-    public chainID: ChainID,
-    public upLockCodeHash: string,
-    public upLockDep: CellDep
+    public upSnapshotUrl: string,    // UniPass Snapshot server url
+    public ckbNodeUrl: string,       // CKB node url
+    public ckbIndexerUrl: string,    // CKB indexer url
+    public chainID: ChainID,         // CKB Chain ID
+    public upLockCodeHash: string,   // UniPass Asset Lock TypeID
+    public upLockDep: CellDep        // UniPass Asset Lock cell deps
   ) {}
 }
 
-const upConfig: UPConfig = new UPConfig(
+const upConfig: UPCKBConfig = new UPCKBConfig(
   '',
   'https://testnet.ckb.dev',
   'https://testnet.ckb.dev/indexer',
@@ -20,15 +20,19 @@ const upConfig: UPConfig = new UPConfig(
   new CellDep(DepType.code, new OutPoint('txhash', 'txindex'))
 );
 
-export type UPConfigOption = {
-  readonly aggregatorUrl?: string;
-  readonly chainID?: ChainID;
-  readonly ckbNodeUrl?: string;
-  readonly [key: string]: any;
+export type UPCKBConfigOption = {
+  readonly upSnapshotUrl?: string;   // UniPass Snapshot server url
+  readonly chainID?: ChainID;        // CKB chain ID
+  readonly ckbNodeUrl?: string;      // CKB node url
+  readonly [key: string]: any;       // other options
 };
 
-export function config(options?: UPConfigOption) {
-  upConfig.aggregatorUrl = options?.aggregatorUrl || upConfig.aggregatorUrl;
+/**
+ * set configuration for UPCKB
+ * @param options UniPass CKB Config Options
+ */
+export function config(options?: UPCKBConfigOption) {
+  upConfig.upSnapshotUrl = options?.upSnapshotUrl || upConfig.upSnapshotUrl;
   upConfig.chainID = options?.chainID || upConfig.chainID;
   upConfig.ckbNodeUrl = options?.ckbNodeUrl || upConfig.ckbNodeUrl;
   upConfig.ckbIndexerUrl = options?.ckbIndexerUrl || upConfig.ckbIndexerUrl;
@@ -36,6 +40,6 @@ export function config(options?: UPConfigOption) {
   upConfig.upLockDep = options?.upLockDep || upConfig.upLockDep;
 }
 
-export function getConfig(): UPConfig {
+export function getConfig(): UPCKBConfig {
   return upConfig;
 }

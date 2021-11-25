@@ -11,7 +11,7 @@ import {
   WitnessArgs,
 } from '@lay2/pw-core';
 import axios from 'axios';
-import { UPAuthResponse } from 'up-core';
+import { UPAuthResponse } from 'up-core-test';
 
 import { getConfig } from './config';
 import * as LumosCore from './js-scripts/lumos-core';
@@ -28,10 +28,16 @@ export type AssetLockProof = {
   readonly userInfoSmtProof: string;
 };
 
+/**
+ * fetch UniPass smt proof/cell deps/user info from UniPass snapshot server
+ * 
+ * @param usernameHash UniPass username sha256 hash
+ * @returns formated AssetLockProof
+ */
 async function fetchAssetLockProof(
   usernameHash: string
 ): Promise<AssetLockProof> {
-  const data = await axios.post(getConfig().aggregatorUrl, {
+  const data = await axios.post(getConfig().upSnapshotUrl, {
     jsonrpc: '2.0',
     method: 'get_assert_lock_tx_info',
     params: [usernameHash],
@@ -52,18 +58,26 @@ async function fetchAssetLockProof(
 
   const lockInfo = [];
   for (const { user_info, username } of lock_info) {
-    lockInfo.push({ userInfo: user_info, username } as LockInfo);
+    lockInfo.push({ userInfo: user_info, username });
   }
 
   const proof: AssetLockProof = {
     cellDeps,
-    lockInfo: lockInfo,
+    lockInfo,
     userInfoSmtProof: user_info_smt_proof,
   };
 
   return proof;
 }
 
+/**
+ * complete transaction with UniPass smt proof
+ * 
+ * @param signedTx signed transaction
+ * @param assetLockProof UniPass smt proof from UniPass snapshot server url
+ * @param usernameHash UniPass username sha256 hash
+ * @returns 
+ */
 function completeTxWithProof(
   signedTx: Transaction,
   assetLockProof: AssetLockProof,
@@ -74,13 +88,8 @@ function completeTxWithProof(
   // push asset-lock bin as cell deps
   signedTx.raw.cellDeps.push(getConfig().upLockDep);
 
-  console.log('[up-ckb] proof', assetLockProof);
-
-  console.log('[up-ckb] pubkey', pubkey);
-  console.log('[up-ckb] sig', sig);
-
   // rebuild witness, username/userinfo/proof
-  const witness_lock = UPLockWitness.SerializeAssetLockWitness({
+  const witnessLock = UPLockWitness.SerializeAssetLockWitness({
     pubkey,
     sig,
     username: new Reader(usernameHash),
@@ -88,14 +97,12 @@ function completeTxWithProof(
     user_info_smt_proof: new Reader(assetLockProof.userInfoSmtProof),
   });
 
-  console.log('[up-ckb] witness_lock', new Reader(witness_lock).serializeJson());
-
   // Fill witnesses
   signedTx.witnesses[0] = new Reader(
     SerializeWitnessArgs(
       normalizers.NormalizeWitnessArgs({
         ...(signedTx.witnessArgs[0] as WitnessArgs),
-        lock: witness_lock,
+        lock: witnessLock,
       })
     )
   ).serializeJson();
@@ -103,10 +110,14 @@ function completeTxWithProof(
   return signedTx;
 }
 
+/**
+ * decode UniPass pubkey and signature from witness.lock in hex format
+ * 
+ * @param witness CKB transaction witness from PWCore signer
+ * @returns pubkey in molecule format
+ */
 function extractSigFromWitness(witness: string) {
-  console.log('[up-ckb] signedTx.witnesses[0]', witness);
   const witnessArgs = new LumosCore.WitnessArgs(new Reader(witness));
-  console.log('[up-ckb] witnessArgs', witnessArgs.getLock().value().raw());
 
   const lockHex = new Reader(
     witnessArgs.getLock().value().raw()
@@ -116,7 +127,6 @@ function extractSigFromWitness(witness: string) {
     Buffer.from(lockHex.replace('0x', ''), 'hex').toString()
   ) as UPAuthResponse;
 
-  console.log('[up-ckb] UPAuthResponse', { keyType, pubkey, sig });
   // convert type to UPAuthResponse
   let pubKeyValue;
   switch (keyType) {
@@ -140,6 +150,15 @@ function extractSigFromWitness(witness: string) {
   return { pubkey: pubKey, sig: new Reader(sig) };
 }
 
+/**
+ * complete transaction with cell deps and witness including smt proof 
+ * and send transaction to ckb chain
+ *
+ * @param usernameHash UniPass username sha256 hash
+ * @param signedTx signed CKB transaction
+ * @param rpc
+ * @returns CKB transaction hash
+ */
 export async function sendUPLockTransaction(
   usernameHash: string,
   signedTx: Transaction,
@@ -153,7 +172,7 @@ export async function sendUPLockTransaction(
     throw new Error('user not registered');
   }
 
-  // fill tx cellDeps
+  // fill tx cell deps and witness
   const completedSignedTx = completeTxWithProof(
     signedTx,
     assetLockProof,
@@ -161,8 +180,6 @@ export async function sendUPLockTransaction(
   );
 
   const transformedTx = transformers.TransformTransaction(completedSignedTx);
-  console.log('[up-ckb] tx', JSON.stringify(transformedTx, null, 2));
   const txHash = await rpc.send_transaction(transformedTx, 'passthrough');
-  console.log('[up-ckb] txHash', txHash);
   return txHash;
 }

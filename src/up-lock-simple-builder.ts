@@ -7,7 +7,7 @@ import {
   Cell,
   Provider,
   RawTransaction,
-  Transaction
+  Transaction,
 } from '@lay2/pw-core';
 
 export class UPLockSimpleBuilder extends Builder {
@@ -36,17 +36,15 @@ export class UPLockSimpleBuilder extends Builder {
     let inputSum = new Amount('0');
     const inputCells = [];
 
-    console.log('[up-ckb] providerAddress', this.provider.address);
     // fill the inputs
     const cells = await this.collector.collect(this.provider.address, {
-      neededAmount
+      neededAmount,
     });
     for (const cell of cells) {
       inputCells.push(cell);
       inputSum = inputSum.add(cell.capacity);
       if (inputSum.gt(neededAmount)) break;
     }
-    console.log('[up-ckb] inputSum', inputSum.toString());
 
     if (inputSum.lt(neededAmount)) {
       throw new Error(
@@ -66,6 +64,8 @@ export class UPLockSimpleBuilder extends Builder {
       [this.witnessArgs]
     );
 
+    // Note: due to transaction will be complete after building, we can not get accurate tx size here.
+    // so we add additional 100000 shannon fee for the transaction
     this.fee = Builder.calcFee(tx, this.feeRate).add(
       new Amount('100000', AmountUnit.shannon)
     );

@@ -60,8 +60,9 @@ function verifyAndExtractOffsets(view, expectedFieldCount, compatible) {
   for (let i = 0; i < offsets.length - 1; i++) {
     if (offsets[i] > offsets[i + 1]) {
       throw new Error(
-        `Offset index ${i}: ${offsets[i]} is larger than offset index ${i +
-          1}: ${offsets[i + 1]}`
+        `Offset index ${i}: ${offsets[i]} is larger than offset index ${
+          i + 1
+        }: ${offsets[i + 1]}`
       );
     }
   }
@@ -168,8 +169,12 @@ export function SerializeAssetLockWitness(value) {
   buffers.push(SerializePubkey(value.pubkey));
   buffers.push(SerializeBytes(value.sig));
   buffers.push(SerializeBytes32(value.username));
+
+  // NOTE: since user_info has been encoded as molecule format,
+  // serialize user info is not needed here.
   // buffers.push(SerializeUserInfo(value.user_info));
   buffers.push(value.user_info.toArrayBuffer());
+
   buffers.push(SerializeBytes(value.user_info_smt_proof));
   return serializeTable(buffers);
 }
@@ -829,7 +834,7 @@ class BytesVec {
 }
 
 function SerializeBytesVec(value) {
-  return serializeTable(value.map(item => SerializeBytes(item)));
+  return serializeTable(value.map((item) => SerializeBytes(item)));
 }
 
 class RsaPubkey {
@@ -1075,9 +1080,8 @@ class PubkeyVec {
 }
 
 function SerializePubkeyVec(value) {
-  return serializeTable(value.map(item => SerializePubkey(item)));
+  return serializeTable(value.map((item) => SerializePubkey(item)));
 }
-
 
 // module.exports = {
 //   SerializeAssetLockWitness,
