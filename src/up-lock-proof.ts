@@ -39,7 +39,7 @@ async function fetchAssetLockProof(
 ): Promise<AssetLockProof> {
   const data = await axios.post(getConfig().upSnapshotUrl, {
     jsonrpc: '2.0',
-    method: 'get_assert_lock_tx_info',
+    method: 'get_asset_lock_tx_info',
     params: [usernameHash],
     id: '1',
   });
