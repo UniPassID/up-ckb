@@ -30,7 +30,7 @@ export type AssetLockProof = {
 
 /**
  * fetch UniPass smt proof/cell deps/user info from UniPass snapshot server
- * 
+ *
  * @param usernameHash UniPass username sha256 hash
  * @returns formated AssetLockProof
  */
@@ -72,11 +72,11 @@ async function fetchAssetLockProof(
 
 /**
  * complete transaction with UniPass smt proof
- * 
+ *
  * @param signedTx signed transaction
  * @param assetLockProof UniPass smt proof from UniPass snapshot server url
  * @param usernameHash UniPass username sha256 hash
- * @returns 
+ * @returns
  */
 function completeTxWithProof(
   signedTx: Transaction,
@@ -86,7 +86,6 @@ function completeTxWithProof(
   const { pubkey, sig } = extractSigFromWitness(signedTx.witnesses[0]);
   signedTx.raw.cellDeps.push(...assetLockProof.cellDeps);
   // push asset-lock bin as cell deps
-  signedTx.raw.cellDeps.push(getConfig().upLockDep);
 
   // rebuild witness, username/userinfo/proof
   const witnessLock = UPLockWitness.SerializeAssetLockWitness({
@@ -112,7 +111,7 @@ function completeTxWithProof(
 
 /**
  * decode UniPass pubkey and signature from witness.lock in hex format
- * 
+ *
  * @param witness CKB transaction witness from PWCore signer
  * @returns pubkey in molecule format
  */
@@ -151,7 +150,7 @@ function extractSigFromWitness(witness: string) {
 }
 
 /**
- * complete transaction with cell deps and witness including smt proof 
+ * complete transaction with cell deps and witness including smt proof
  * and send transaction to ckb chain
  *
  * @param usernameHash UniPass username sha256 hash
