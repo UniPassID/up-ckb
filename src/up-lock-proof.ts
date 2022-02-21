@@ -34,7 +34,7 @@ export type AssetLockProof = {
  * @param usernameHash UniPass username sha256 hash
  * @returns formated AssetLockProof
  */
-async function fetchAssetLockProof(
+export async function fetchAssetLockProof(
   usernameHash: string
 ): Promise<AssetLockProof> {
   const data = await axios.post(getConfig().upSnapshotUrl, {
@@ -78,7 +78,7 @@ async function fetchAssetLockProof(
  * @param usernameHash UniPass username sha256 hash
  * @returns
  */
-function completeTxWithProof(
+export function completeTxWithProof(
   signedTx: Transaction,
   assetLockProof: AssetLockProof,
   usernameHash: string

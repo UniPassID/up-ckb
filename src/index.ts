@@ -66,6 +66,7 @@ async function sendTransaction(
   return sendUPLockTransaction(provider.usernameHash, signedTx, rpc);
 }
 
+export * from './up-lock-proof';
 export * from './providers';
 const functions = {
   config,
